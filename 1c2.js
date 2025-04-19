@@ -1,8 +1,6 @@
 var numMissedButMatched = 0;
 var startTime;
 var typingTimer;
-var numHalfDiff = 0;
-var numFullDiff = 0;
 
 window.onload = function() {
     document.getElementById('paragraphB').addEventListener('input', function() {
@@ -54,8 +52,6 @@ function saveToLeaderboard(resultData) {
     
     const testNumber = document.getElementById('test-select').value;
     const speed = parseInt(document.getElementById('speed-select').value);
-    const paragraphA = document.getElementById('paragraphA').value.split(/\s+/).length;
-    const paragraphB = document.getElementById('paragraphB').value.split(/\s+/).length;
     
     const result = {
         userName: user.displayName || 'Anonymous',
@@ -63,11 +59,9 @@ function saveToLeaderboard(resultData) {
         testNumber: testNumber,
         speed: speed,
         accuracy: resultData.accuracy,
-        totalWords: paragraphA,
-        typedWords: paragraphB,
+        totalWords: resultData.totalWords,
+        typedWords: resultData.typedWords,
         timeTaken: resultData.timeTaken,
-        halfMistakes: numHalfDiff,
-        fullMistakes: numFullDiff,
         timestamp: Date.now()
     };
     
@@ -95,8 +89,8 @@ function compareParagraphs() {
         .split(/\s+/);
 
     var comparedText = '';
-    numHalfDiff = 0;
-    numFullDiff = 0;
+    var numHalfDiff = 0;
+    var numFullDiff = 0;
     var wordAIndex = 0;
     var wordBIndex = 0;
 
@@ -299,28 +293,7 @@ function compareParagraphs() {
 
     var aiAnalysis = generateAIAnalysis(paragraphA, paragraphB, numHalfDiff, numFullDiff, wpm, accuracyPercentage);
     
-    // Add date/time header and buttons
-    const currentDate = new Date();
-    const formattedDate = `${currentDate.getDate()} ${['January','February','March','April','May','June','July','August','September','October','November','December'][currentDate.getMonth()]} ${currentDate.getFullYear()},`;
-    const hours = currentDate.getHours();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = hours % 12 || 12;
-    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
-    const formattedTime = `${formattedHours}:${minutes} ${ampm}`;
-
-    const headerText = document.createElement('div');
-    headerText.innerHTML = `
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #4361ee;">Steno Warriors Result Sheet</h2>
-            <div style="margin-top: 10px;">
-                Test Date & Time: ${formattedDate} ${formattedTime}
-            </div>
-        </div>
-    `;
-    headerText.style.textAlign = 'center';
-
-    const textBoxC = document.getElementById('textBoxC');
-    textBoxC.innerHTML = '<h2>Result Sheet:</h2>' + 
+    document.getElementById('textBoxC').innerHTML = '<h2>Result Sheet:</h2>' + 
         comparedText + 
         tableContent + 
         '<div style="margin-top: 30px; border-top: 2px solid #4361ee; padding-top: 20px;">' +
@@ -328,23 +301,8 @@ function compareParagraphs() {
         aiAnalysis +
         '</div>';
     
-    textBoxC.insertBefore(headerText, textBoxC.firstChild);
-    
-    const downloadBtn = document.createElement('button');
-    downloadBtn.textContent = 'Download PDF';
-    downloadBtn.className = 'download-btn';
-    downloadBtn.onclick = generatePDF;
-    
-    const closeBtn = document.createElement('button');
-    closeBtn.textContent = 'Close Results';
-    closeBtn.className = 'download-btn';
-    closeBtn.style.marginLeft = '10px';
-    closeBtn.onclick = () => location.reload();
-    
-    textBoxC.appendChild(downloadBtn);
-    textBoxC.appendChild(closeBtn);
-    textBoxC.style.display = 'block';
-    textBoxC.style.border = '2px solid green';
+    document.getElementById('textBoxC').style.display = 'block';
+    document.getElementById('textBoxC').style.border = '2px solid green';
 
     var differenceSpans = document.querySelectorAll('#textBoxC span[style*="color:"]');
     differenceSpans.forEach(function (span) {
@@ -511,39 +469,4 @@ function analyzeMistakes(originalText, userText) {
     }
     
     return analysis;
-}
-
-function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const element = document.getElementById('textBoxC');
-    const buttons = element.querySelectorAll('button');
-    buttons.forEach(btn => btn.style.display = 'none');
-    
-    html2canvas(element, {
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        allowTaint: true
-    }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210;
-        const pageHeight = 295;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-        }
-
-        buttons.forEach(btn => btn.style.display = 'block');
-        pdf.save('StenoWarriors_Result.pdf');
-    });
 }

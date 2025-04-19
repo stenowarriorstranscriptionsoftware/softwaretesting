@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <a href="mystats.html" class="download-btn">📈 My Stats</a>
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   <title>Steno Warriors Transcription Software</title>
   <!-- Firebase SDKs -->
@@ -127,7 +128,7 @@
   <div id="leaderboard-modal" class="modal" style="display: none;">
     <div class="modal-content">
       <span class="close-modal">&times;</span>
-      <h2>🏆 Leaderboard</h2>
+      <h2>Leaderboard</h2>
       <div class="leaderboard-filters">
         <select id="leaderboard-test-select">
           <option value="all">All Transcriptions</option>
@@ -150,12 +151,10 @@
             <tr>
               <th>Rank</th>
               <th>Name</th>
-              <th>Test</th>
+              <th>Transcription</th>
               <th>Speed</th>
               <th>Accuracy</th>
               <th>Words</th>
-              <th>½ Mistakes</th>
-              <th>Full Mistakes</th>
               <th>Typed</th>
               <th>Time</th>
               <th>Date</th>
@@ -184,16 +183,16 @@
 
   <script>
     // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyD71idTIXlQt0TIjICLg2BL6dhfi7e6IXI",
-      authDomain: "stenowarriorskc.firebaseapp.com",
-      projectId: "stenowarriorskc",
-      storageBucket: "stenowarriorskc.appspot.com",
-      messagingSenderId: "923880455930",
-      appId: "1:923880455930:web:4cc708da4c0641b79b5343",
-      measurementId: "G-WK8RPR2QMD"
-    };
-    
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyD71idTIXlQt0TIjICLg2BL6dhfi7e6IXI",
+  authDomain: "stenowarriorskc.firebaseapp.com",
+  projectId: "stenowarriorskc",
+  storageBucket: "stenowarriorskc.firebasestorage.app",
+  messagingSenderId: "923880455930",
+  appId: "1:923880455930:web:4cc708da4c0641b79b5343",
+  measurementId: "G-WK8RPR2QMD"
+};
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -222,6 +221,7 @@
         });
     }
 
+    // Email/Password Authentication Functions
     function loginWithEmail() {
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
@@ -415,7 +415,7 @@
       for (let i = 1; i <= 22; i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.text = `Test ${i}`;
+        option.text = `Transcription ${i}`;
         leaderboardTestSelect.appendChild(option);
       }
       
@@ -423,7 +423,7 @@
       for (let i = 23; i <= 44; i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.text = `Test ${i}`;
+        option.text = `Transcription ${i}`;
         leaderboardTestSelect.appendChild(option);
       }
        
@@ -431,7 +431,7 @@
       for (let i = 45; i <= 66; i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.text = `Test ${i}`;
+        option.text = `Transcription ${i}`;
         leaderboardTestSelect.appendChild(option);
       }
     }
@@ -440,7 +440,7 @@
       const threeMonthsAgo = new Date();
       threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
       
-      leaderboardTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px; color: var(--gray-color);">Loading leaderboard...</td></tr>';
+      leaderboardTableBody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Loading leaderboard...</td></tr>';
       
       database.ref('leaderboard').orderByChild('timestamp').startAt(threeMonthsAgo.getTime()).once('value')
         .then((snapshot) => {
@@ -469,7 +469,7 @@
         })
         .catch((error) => {
           console.error("Error loading leaderboard:", error);
-          leaderboardTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; color: red;">Error loading leaderboard. Please try again.</td></tr>';
+          leaderboardTableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: red;">Error loading leaderboard. Please try again.</td></tr>';
         });
     }
 
@@ -481,7 +481,7 @@
       leaderboardTableBody.innerHTML = '';
       
       if (paginatedData.length === 0) {
-        leaderboardTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px; color: var(--gray-color);">No results found</td></tr>';
+        leaderboardTableBody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No results found</td></tr>';
         return;
       }
       
@@ -493,34 +493,13 @@
         const timeTakenStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
         const dateStr = new Date(item.timestamp).toLocaleDateString();
         
-        // Determine accuracy class
-        let accuracyClass = '';
-        if (item.accuracy >= 90) accuracyClass = 'accuracy-high';
-        else if (item.accuracy >= 75) accuracyClass = 'accuracy-medium';
-        else accuracyClass = 'accuracy-low';
-        
-        // Progress bar for accuracy
-        const accuracyBar = `<div class="progress-container">
-          <div class="progress-bar" style="width: ${item.accuracy}%"></div>
-        </div>`;
-        
-        // Add rank class for top 3
-        if (rank === 1) row.classList.add('rank-1');
-        else if (rank === 2) row.classList.add('rank-2');
-        else if (rank === 3) row.classList.add('rank-3');
-        
         row.innerHTML = `
           <td>${rank}</td>
-          <td><strong>${item.userName}</strong></td>
+          <td>${item.userName}</td>
           <td>Test ${item.testNumber}</td>
           <td>${item.speed} WPM</td>
-          <td class="${accuracyClass}">
-            ${accuracyBar}
-            ${item.accuracy.toFixed(2)}%
-          </td>
+          <td>${item.accuracy.toFixed(2)}%</td>
           <td>${item.totalWords}</td>
-          <td>${item.halfMistakes || 0}</td>
-          <td>${item.fullMistakes || 0}</td>
           <td>${item.typedWords}</td>
           <td>${timeTakenStr}</td>
           <td>${dateStr}</td>
@@ -715,23 +694,9 @@
     updateVideo();
 
     // PDF Generation
-   function downloadPDF() {
-    if (isTimerRunning) pauseTimer();
-    
-    // Ensure we have the latest text content
-    const paragraphA = document.getElementById('paragraphA').value;
-    const paragraphB = document.getElementById('paragraphB').value;
-    
-    if (!paragraphB || paragraphB.trim() === "") {
-        alert("Please type something before showing results!");
-        return;
-    }
-    
-    compareParagraphs();
-    
-    // Scroll to results section
-    document.getElementById('textBoxC').scrollIntoView({ behavior: 'smooth' });
-}
+    function downloadPDF() {
+        if (isTimerRunning) pauseTimer();
+        compareParagraphs();
         
         const currentDate = new Date();
         const formattedDate = `${currentDate.getDate()} ${['January','February','March','April','May','June','July','August','September','October','November','December'][currentDate.getMonth()]} ${currentDate.getFullYear()},`;
