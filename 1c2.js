@@ -52,6 +52,8 @@ function saveToLeaderboard(resultData) {
     
     const testNumber = document.getElementById('test-select').value;
     const speed = parseInt(document.getElementById('speed-select').value);
+    const paragraphA = document.getElementById('paragraphA').value.split(/\s+/).length;
+    const paragraphB = document.getElementById('paragraphB').value.split(/\s+/).length;
     
     const result = {
         userName: user.displayName || 'Anonymous',
@@ -59,8 +61,8 @@ function saveToLeaderboard(resultData) {
         testNumber: testNumber,
         speed: speed,
         accuracy: resultData.accuracy,
-        totalWords: resultData.totalWords,
-        typedWords: resultData.typedWords,
+        totalWords: paragraphA,
+        typedWords: paragraphB,
         timeTaken: resultData.timeTaken,
         halfMistakes: numHalfDiff,
         fullMistakes: numFullDiff,
@@ -78,21 +80,7 @@ function saveToLeaderboard(resultData) {
 }
 
 function compareParagraphs() {
- document.getElementById('textBoxC').innerHTML = '<h2>Result Sheet:</h2>' + 
-        comparedText + 
-        tableContent + 
-        '<div style="margin-top: 30px; border-top: 2px solid #4361ee; padding-top: 20px;">' +
-        '<h2 style="color: #4361ee;">AI-Powered Feedback</h2>' +
-        aiAnalysis +
-        '</div>';
-    
-    // Make sure to show the results container
-    document.getElementById('textBoxC').style.display = 'block';
-    document.getElementById('textBoxC').style.border = '2px solid green';
-
-    // Scroll to the results for better visibility
-    document.getElementById('textBoxC').scrollIntoView({ behavior: 'smooth' });  
- var paragraphA = document.getElementById('paragraphA').value
+    var paragraphA = document.getElementById('paragraphA').value
         .replace(/<[^>]*>/g, '')
         .replace(/[\u2018\u2019]/g, "'")
         .trim()
