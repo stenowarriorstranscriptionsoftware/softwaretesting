@@ -150,7 +150,7 @@
             <tr>
               <th>Rank</th>
               <th>Name</th>
-              <th>Transcription</th>
+              <th>Test</th>
               <th>Speed</th>
               <th>Accuracy</th>
               <th>Words</th>
@@ -185,15 +185,14 @@
   <script>
     // Firebase Configuration
     const firebaseConfig = {
-  apiKey: "AIzaSyB9vruL_f9KZPC-Ihdj3UuqcXSgy1Lzqm0",
-  authDomain: "score-collection.firebaseapp.com",
-  databaseURL: "https://score-collection-default-rtdb.firebaseio.com",
-  projectId: "score-collection",
-  storageBucket: "score-collection.firebasestorage.app",
-  messagingSenderId: "720795371551",
-  appId: "1:720795371551:web:78ff7863cbeaca0161ed2a",
-  measurementId: "G-L6MHY1KCZ0"
-};
+      apiKey: "AIzaSyD71idTIXlQt0TIjICLg2BL6dhfi7e6IXI",
+      authDomain: "stenowarriorskc.firebaseapp.com",
+      projectId: "stenowarriorskc",
+      storageBucket: "stenowarriorskc.appspot.com",
+      messagingSenderId: "923880455930",
+      appId: "1:923880455930:web:4cc708da4c0641b79b5343",
+      measurementId: "G-WK8RPR2QMD"
+    };
     
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
@@ -416,7 +415,7 @@
       for (let i = 1; i <= 22; i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.text = `Transcription ${i}`;
+        option.text = `Test ${i}`;
         leaderboardTestSelect.appendChild(option);
       }
       
@@ -424,7 +423,7 @@
       for (let i = 23; i <= 44; i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.text = `Transcription ${i}`;
+        option.text = `Test ${i}`;
         leaderboardTestSelect.appendChild(option);
       }
        
@@ -432,7 +431,7 @@
       for (let i = 45; i <= 66; i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.text = `Transcription ${i}`;
+        option.text = `Test ${i}`;
         leaderboardTestSelect.appendChild(option);
       }
     }
@@ -716,9 +715,23 @@
     updateVideo();
 
     // PDF Generation
-    function downloadPDF() {
-        if (isTimerRunning) pauseTimer();
-        compareParagraphs();
+   function downloadPDF() {
+    if (isTimerRunning) pauseTimer();
+    
+    // Ensure we have the latest text content
+    const paragraphA = document.getElementById('paragraphA').value;
+    const paragraphB = document.getElementById('paragraphB').value;
+    
+    if (!paragraphB || paragraphB.trim() === "") {
+        alert("Please type something before showing results!");
+        return;
+    }
+    
+    compareParagraphs();
+    
+    // Scroll to results section
+    document.getElementById('textBoxC').scrollIntoView({ behavior: 'smooth' });
+}
         
         const currentDate = new Date();
         const formattedDate = `${currentDate.getDate()} ${['January','February','March','April','May','June','July','August','September','October','November','December'][currentDate.getMonth()]} ${currentDate.getFullYear()},`;
